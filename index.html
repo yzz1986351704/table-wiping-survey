@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>桌面擦拭清洁 · 数据采集方案调研</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #fafafa; --surface: #fff; --border: #e5e5e5; --text: #171717;
+      --muted: #737373; --accent: #2563eb; --accent-soft: #eff6ff;
+      --success: #16a34a; --warn: #ca8a04; --sidebar-w: 260px;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar {
+      position: fixed; top: 0; left: 0; width: var(--sidebar-w); height: 100vh;
+      overflow-y: auto; background: var(--surface); border-right: 1px solid var(--border); padding: 1.25rem 1rem;
+    }
+    .sidebar h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 .75rem; }
+    .sidebar nav a { display: block; padding: .35rem .5rem; border-radius: 6px; color: var(--text); font-size: .9rem; }
+    .sidebar nav a:hover { background: var(--accent-soft); text-decoration: none; }
+    .sidebar .date { font-size: .75rem; color: var(--muted); margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+    main { margin-left: var(--sidebar-w); flex: 1; max-width: 980px; padding: 2rem 2.5rem 3rem; }
+    .hero { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem 2rem; margin-bottom: 2rem; }
+    .hero h1 { margin: 0 0 .5rem; font-size: 1.75rem; line-height: 1.35; }
+    .hero .subtitle { margin: 0; color: var(--muted); font-size: 1rem; }
+    .hero .report-date { margin: .75rem 0 0; font-size: .85rem; color: var(--muted); }
+    .pill-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1rem; }
+    .pill { font-size: .78rem; padding: .2rem .65rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent); border: 1px solid #bfdbfe; }
+    section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem 1.75rem; margin-bottom: 1.5rem; }
+    section h2 { margin-top: 0; font-size: 1.35rem; border-bottom: 1px solid var(--border); padding-bottom: .5rem; }
+    section h3 { font-size: 1.05rem; margin-top: 1.5rem; }
+    .lead { color: var(--muted); font-size: .95rem; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    @media (max-width: 900px) { .sidebar { display: none; } main { margin-left: 0; padding: 1rem; } .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+    .card { border: 1px solid var(--border); border-radius: 10px; padding: 1rem; background: #fcfcfc; }
+    .card h4 { margin: 0 0 .35rem; font-size: .95rem; }
+    .card .meta { font-size: .8rem; color: var(--muted); }
+    .badge { display: inline-block; font-size: .72rem; padding: .1rem .45rem; border-radius: 4px; background: #f5f5f5; border: 1px solid var(--border); margin-right: .25rem; }
+    .badge.highlight { background: #f0fdf4; border-color: #bbf7d0; color: var(--success); }
+    .badge.lock { background: #fefce8; border-color: #fde68a; color: var(--warn); }
+    table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+    th, td { border: 1px solid var(--border); padding: .5rem .65rem; text-align: left; vertical-align: top; }
+    th { background: #f5f5f5; font-weight: 600; }
+    .media-block { margin: 1rem 0; }
+    .media-block figcaption { font-size: .82rem; color: var(--muted); margin-top: .4rem; }
+    video { width: 100%; max-height: 420px; border-radius: 8px; border: 1px solid var(--border); background: #000; }
+    .thumb-row { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .75rem; }
+    .thumb-row img { width: calc(25% - .4rem); min-width: 140px; border-radius: 6px; border: 1px solid var(--border); cursor: pointer; }
+    .thumb-row img:hover, .thumb-row img.active { outline: 2px solid var(--accent); }
+    .figure-img { width: 100%; border-radius: 8px; border: 1px solid var(--border); }
+    .mermaid { background: #fcfcfc; border-radius: 8px; padding: .5rem; overflow-x: auto; }
+    #dirty-chart { width: 100%; height: 220px; border: 1px solid var(--border); border-radius: 8px; background: #fcfcfc; }
+    .chart-caption { font-size: .82rem; color: var(--muted); margin-top: .35rem; }
+    .compare-bar { display: flex; align-items: center; gap: .5rem; margin: .35rem 0; font-size: .82rem; }
+    .compare-bar .label { width: 110px; flex-shrink: 0; }
+    .compare-bar .bar-wrap { flex: 1; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
+    .compare-bar .bar { height: 100%; background: var(--accent); border-radius: 4px; }
+    .footer { text-align: center; padding: 2rem 1rem; color: var(--muted); font-size: .82rem; border-top: 1px solid var(--border); margin-top: 1rem; }
+    ul.compact { margin: .5rem 0; padding-left: 1.2rem; }
+    ul.compact li { margin: .25rem 0; font-size: .92rem; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>目录</h2>
+      <nav>
+        <a href="#overview">概览</a>
+        <a href="#challenge">任务难点</a>
+        <a href="#pipeline">采集流程</a>
+        <a href="#methods">方案对比</a>
+        <a href="#lerobot-flow">LeRobot 数据流</a>
+        <a href="#samples">数据集样例</a>
+        <a href="#metrics">清洁度指标</a>
+        <a href="#datasets">数据集清单</a>
+        <a href="#detail">采集方式详解</a>
+        <a href="#recommend">推荐方案</a>
+        <a href="#format">数据格式</a>
+        <a href="#papers">参考文献</a>
+      </nav>
+      <p class="date">2026 年 7 月</p>
+    </aside>
+
+    <main>
+      <header class="hero" id="overview">
+        <h1>桌面 / 台面擦拭清洁<br>数据采集方案调研</h1>
+        <p class="subtitle">接触丰富操作 · 多模态采集 · 公开数据集 · 行业方案对比</p>
+        <p class="report-date">报告日期：2026 年 7 月 9 日</p>
+        <div class="pill-row">
+          <span class="pill">LeRobot</span>
+          <span class="pill">VR 仿真扩展</span>
+          <span class="pill">力 / 力矩 F/T</span>
+          <span class="pill">dirty_fraction</span>
+          <span class="pill">多视角 RGB</span>
+        </div>
+      </header>
+
+      <section id="challenge">
+        <h2>1. 任务特点与采集难点</h2>
+        <p class="lead">擦拭属于接触丰富（contact-rich）操作，相比抓取 / 放置，对力控、覆盖率和效果评估有更高要求。</p>
+        <div class="grid-3">
+          <div class="card"><h4>力控</h4><p class="meta">需持续稳定法向压力；推荐 100Hz 以上 F/T 传感器同步采集</p></div>
+          <div class="card"><h4>覆盖</h4><p class="meta">擦拭轨迹须覆盖全部污渍区域；可结合分割 mask 与覆盖率地图</p></div>
+          <div class="card"><h4>双臂协作</h4><p class="meta">递抹布、扶稳物体、双手交替擦拭等子任务链</p></div>
+          <div class="card"><h4>效果评估</h4><p class="meta">before/after 对比、dirty_fraction、人工或自动清洁度评分</p></div>
+          <div class="card"><h4>多模态同步</h4><p class="meta">RGB / RGB-D + 关节状态 + 力数据，时间戳对齐误差宜 &lt; 20ms</p></div>
+          <div class="card"><h4>物体状态</h4><p class="meta">抹布 / 海绵含水变形，液体污渍会随时间扩散</p></div>
+        </div>
+      </section>
+
+      <section id="pipeline">
+        <h2>2. 采集流程总览</h2>
+        <div class="mermaid">
+flowchart TB
+  subgraph Input["输入层"]
+    OP[操作员] --> TO[遥操作设备]
+  end
+  subgraph Teleop["遥操作方式"]
+    TO --> ALOHA[主从臂 ALOHA]
+    TO --> VR[VR / AVP]
+    TO --> SM[SpaceMouse]
+    TO --> EXO[外骨骼]
+  end
+  subgraph Robot["执行层"]
+    ALOHA & VR & SM & EXO --> ARM[机械臂 / 人形机器人]
+  end
+  subgraph Sensors["同步采集"]
+    ARM --> CAM[多路相机 30FPS]
+    ARM --> STATE[关节 / 末端状态]
+    ARM --> FT[腕部 F/T 可选]
+  end
+  subgraph Storage["数据存储"]
+    CAM & STATE --> LR[LeRobot 格式]
+    FT --> LR
+    FT --> ZARR[ForceFlow Zarr]
+    VR --> SIM[Exylos 仿真扩展] --> LR
+  end
+  subgraph QA["标注与质检"]
+    LR --> PHASE[阶段标注]
+    LR --> METRIC[清洁度指标]
+    LR --> LABEL[成功 / 失败标签]
+  end
+        </div>
+      </section>
+
+      <section id="methods">
+        <h2>3. 五种采集方案对比</h2>
+        <table>
+          <thead>
+            <tr><th>方案</th><th>代表项目</th><th>成本</th><th>力数据</th><th>规模化</th><th>Sim2Real</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>真机遥操作</strong></td><td>LeRobot, DROID, Unitree G1</td><td>高</td><td>可选</td><td>中</td><td>无 gap</td></tr>
+            <tr><td><strong>VR + 仿真扩展</strong></td><td>Exylos</td><td>低</td><td>无</td><td>高</td><td>需微调</td></tr>
+            <tr><td><strong>力控专项采集</strong></td><td>ForceFlow</td><td>中</td><td>核心</td><td>中</td><td>无 gap</td></tr>
+            <tr><td><strong>商业数据服务</strong></td><td>Claru</td><td>很高</td><td>100Hz</td><td>很高</td><td>无 gap</td></tr>
+            <tr><td><strong>大规模通用数据集</strong></td><td>RoboCOIN, Bridge, AgiBot</td><td>—</td><td>部分含</td><td>很高</td><td>视平台</td></tr>
+          </tbody>
+        </table>
+        <h3>ForceFlow：擦拭任务为何需要力数据</h3>
+        <figure class="media-block">
+          <img class="figure-img" src="assets/diagrams/forceflow_motivation.png" alt="视觉难以反映接触压力与擦拭质量" />
+          <figcaption>来源：ForceFlow 项目 · 纯视觉难以捕捉接触压力与擦拭过程中的高频动力学</figcaption>
+        </figure>
+        <p><strong>关键结论</strong>（Adaptive Wiping, 2025）：引入实时 F/T 反馈后，平均参考力跟踪准确率由 <strong>4% 提升至 96%</strong>。</p>
+      </section>
+
+      <section id="lerobot-flow">
+        <h2>4. LeRobot 录制数据流</h2>
+        <p class="lead">LeRobot 是当前机器人模仿学习领域常用的开源采集框架，典型录制流程如下。</p>
+        <div class="mermaid">
+sequenceDiagram
+  participant T as 遥操作员
+  participant Tel as 遥操作设备
+  participant R as 从动机械臂
+  participant D as 数据集
+  loop 每帧约 30Hz
+    R->>R: 读取观测（图像、关节等）
+    T->>Tel: 操作输入
+    Tel->>R: 发送动作指令
+    R->>D: 同步写入状态、动作与时间戳
+    R->>D: 编码并存储视频帧
+  end
+        </div>
+        <ul class="compact">
+          <li>支持主从臂、VR、键盘等多种遥操作方式</li>
+          <li>数据以 Parquet（状态 / 动作）+ MP4（多路视频）格式存储</li>
+          <li>可与 Hugging Face Hub 对接，便于共享与训练</li>
+        </ul>
+      </section>
+
+      <section id="samples">
+        <h2>5. 公开数据集样例</h2>
+        <p class="lead">以下为两个代表性数据集的 Episode 样例，展示典型擦拭任务的视觉观测与操作过程。</p>
+
+        <h3>Exylos · 双臂海绵清理台面溢洒（俯视视角）</h3>
+        <div class="card">
+          <span class="badge highlight">公开数据集</span>
+          <span class="badge">50 episodes · VR 采集</span>
+          <span class="badge">1280×960 · 30 FPS</span>
+          <figure class="media-block">
+            <video id="exylos-video" controls preload="metadata" src="assets/videos/exylos_ep0_top.mp4"></video>
+            <figcaption>Episode 0 · 俯视相机 · 任务：移除障碍物并用海绵擦拭液体 · 时长约 49 秒 · 清洁成功</figcaption>
+          </figure>
+          <div class="thumb-row" data-target="exylos-video">
+            <img src="assets/exylos/frame_0s.jpg" alt="起始：污渍完整" data-time="0" class="active" />
+            <img src="assets/exylos/frame_15s.jpg" alt="擦拭进行中" data-time="15" />
+            <img src="assets/exylos/frame_30s.jpg" alt="擦拭进行中" data-time="30" />
+            <img src="assets/exylos/frame_45s.jpg" alt="接近完成" data-time="45" />
+          </div>
+        </div>
+
+        <h3>Unitree G1 · 抹布擦拭桌面水渍</h3>
+        <div class="card">
+          <span class="badge highlight">公开数据集</span>
+          <span class="badge">200 episodes · AVP 遥操作</span>
+          <span class="badge">640×480 · 30 FPS</span>
+          <figure class="media-block">
+            <video id="unitree-video" controls preload="metadata" src="assets/videos/unitree_ep0_left.mp4"></video>
+            <figcaption>Episode 0 · 左侧高位相机 · Unitree G1 双臂人形 · 时长约 12 秒</figcaption>
+          </figure>
+          <div class="thumb-row" data-target="unitree-video">
+            <img src="assets/unitree/frame_0s.jpg" alt="任务起始" data-time="0" class="active" />
+            <img src="assets/unitree/frame_5s.jpg" alt="擦拭中" data-time="5" />
+            <img src="assets/unitree/frame_10s.jpg" alt="擦拭中" data-time="10" />
+          </div>
+        </div>
+
+        <h3>Exylos 任务阶段划分</h3>
+        <div class="mermaid">
+stateDiagram-v2
+  [*] --> approach
+  approach --> grasp
+  grasp --> transport
+  transport --> clean_surface
+  clean_surface --> clean_swipe_pass
+  clean_swipe_pass --> clean_surface
+  clean_surface --> retract: dirty_fraction ≤ 0.01
+  retract --> [*]
+  clean_surface --> collision
+  collision --> clean_surface
+        </div>
+      </section>
+
+      <section id="metrics">
+        <h2>6. 清洁度指标示例</h2>
+        <p class="lead">Exylos 数据集提供 <code>liquid_spill.dirty_fraction</code> 字段（1.0 = 100% 污渍残留，0.01 为常用成功阈值）。下图为 Episode 0 的清洁进度曲线。</p>
+        <canvas id="dirty-chart"></canvas>
+        <p class="chart-caption">Exylos Table Spill Cleanup · Episode 0 · 共 1475 帧 · 终端 dirty_fraction = 0.0003（清洁成功）</p>
+        <div class="grid-2" style="margin-top:1rem;">
+          <div class="card">
+            <h4>起始状态</h4>
+            <img class="figure-img" src="assets/exylos/frame_0s.jpg" alt="起始" />
+            <p class="meta">dirty_fraction ≈ 1.0</p>
+          </div>
+          <div class="card">
+            <h4>完成状态</h4>
+            <img class="figure-img" src="assets/exylos/frame_45s.jpg" alt="完成" />
+            <p class="meta">dirty_fraction ≈ 0.0003（低于 0.01 阈值）</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="datasets">
+        <h2>7. 公开数据集清单</h2>
+        <h3>开放访问</h3>
+        <div class="grid-2">
+          <div class="card">
+            <h4>Exylos Table Spill Cleanup</h4>
+            <div class="meta">50 ep · 约 22.5 GB · 双臂 Panda · Apache 2.0</div>
+            <p>7 路 RGB、分割 mask、6DoF 位姿、dirty_fraction、阶段标注</p>
+            <span class="badge highlight">含本页样例视频</span>
+            <a href="https://huggingface.co/datasets/ExylosAi/table_spill_cleanup_bimanual" target="_blank" rel="noopener">Hugging Face →</a>
+            <div class="compare-bar"><span class="label">标注丰富度</span><div class="bar-wrap"><div class="bar" style="width:95%"></div></div></div>
+          </div>
+          <div class="card">
+            <h4>Unitree G1 Wipe Table</h4>
+            <div class="meta">200 ep · G1 人形 · AVP 遥操作</div>
+            <p>腕部 + 头部 4 路视频，双臂 7-DoF 状态与末端位姿</p>
+            <span class="badge highlight">含本页样例视频</span>
+            <a href="https://huggingface.co/datasets/unitreerobotics/G1_Dex1_Wipe_Table" target="_blank" rel="noopener">Hugging Face →</a>
+            <div class="compare-bar"><span class="label">真机真实感</span><div class="bar-wrap"><div class="bar" style="width:90%"></div></div></div>
+          </div>
+          <div class="card">
+            <h4>ForceFlow</h4>
+            <div class="meta">350 ep · xArm6 + F/T · Zarr 格式</div>
+            <p>含 clean_whiteboard（平面恒压）、clean_vase（曲面力控）等任务</p>
+            <a href="https://huggingface.co/datasets/JokerESC/ForceFlow" target="_blank" rel="noopener">Hugging Face →</a>
+            <div class="compare-bar"><span class="label">力数据质量</span><div class="bar-wrap"><div class="bar" style="width:98%"></div></div></div>
+          </div>
+          <div class="card">
+            <h4>DROID wipe table</h4>
+            <div class="meta">20 ep · Franka · 10 Hz</div>
+            <p>多实验室真实场景，多样性高；无专用清洁度指标</p>
+            <a href="https://huggingface.co/datasets/jellyho/droid_wipe_table" target="_blank" rel="noopener">Hugging Face →</a>
+          </div>
+          <div class="card">
+            <h4>ALOHA mobile wipe wine</h4>
+            <div class="meta">50 ep · 移动双臂 · 50 Hz</div>
+            <p>移动底座 + 擦拭，适用于移动操作场景</p>
+            <a href="https://huggingface.co/datasets/lerobot/aloha_mobile_wipe_wine" target="_blank" rel="noopener">Hugging Face →</a>
+          </div>
+          <div class="card">
+            <h4>Exylos RGBD 子集</h4>
+            <div class="meta">5 ep · 含深度图</div>
+            <p>RGB-D + 分割 + 位姿的全模态小规模样本</p>
+            <a href="https://huggingface.co/datasets/ExylosAi/table_spill_cleanup_bimanual_rgbd_segmentation_poses" target="_blank" rel="noopener">Hugging Face →</a>
+          </div>
+        </div>
+
+        <h3>需 Hugging Face 授权（Gated）</h3>
+        <div class="grid-3">
+          <div class="card">
+            <h4>RoboCOIN R1 Lite wipe table</h4>
+            <span class="badge lock">需申请</span>
+            <div class="meta">107 ep · Galaxea R1-Lite · 约 2.4 GB</div>
+          </div>
+          <div class="card">
+            <h4>RoboCOIN Cobot Magic clear desktop</h4>
+            <span class="badge lock">需申请</span>
+            <div class="meta">293 ep · 咖啡渍擦拭 · 50 Hz</div>
+          </div>
+          <div class="card">
+            <h4>RoboCOIN RMC-AIDA-L clean table</h4>
+            <span class="badge lock">需申请</span>
+            <div class="meta">776 ep · Realman · 约 3.5 GB</div>
+          </div>
+        </div>
+        <p style="margin-top:.75rem;font-size:.9rem;">RoboCOIN 系列申请入口：<a href="https://huggingface.co/RoboCOIN" target="_blank" rel="noopener">huggingface.co/RoboCOIN</a></p>
+      </section>
+
+      <section id="detail">
+        <h2>8. 各数据集采集方式</h2>
+        <div class="mermaid">
+flowchart LR
+  subgraph Exylos["Exylos"]
+    E1[VR 人机演示] --> E2[Retarget 至 Panda]
+    E2 --> E3[程序化场景扩展]
+    E3 --> E4[LeRobot + 标注]
+  end
+  subgraph Unitree["Unitree G1"]
+    U1[Apple Vision Pro] --> U2[遥操作中间件]
+    U2 --> U3[G1 双臂执行]
+    U3 --> U4[30Hz 录制]
+  end
+  subgraph ForceFlow["ForceFlow"]
+    F1[SpaceMouse] --> F2[xArm6 + F/T]
+    F2 --> F3[Zarr 存储]
+  end
+        </div>
+        <table>
+          <thead><tr><th>数据集</th><th>采集设备</th><th>频率</th><th>相机</th><th>特色字段</th></tr></thead>
+          <tbody>
+            <tr><td>Exylos</td><td>VR 头显</td><td>30 Hz</td><td>7× RGB</td><td>dirty_fraction, mask, phase</td></tr>
+            <tr><td>Unitree G1</td><td>AVP VR</td><td>30 Hz</td><td>腕 + 头 4 路</td><td>双臂 7-DoF + 末端位姿</td></tr>
+            <tr><td>ForceFlow</td><td>SpaceMouse</td><td>与视觉同步</td><td>RealSense ×2</td><td>force, delta_force</td></tr>
+            <tr><td>RoboCOIN</td><td>多平台遥操作</td><td>30–50 Hz</td><td>多视角</td><td>原子动作 wipe 标签</td></tr>
+            <tr><td>DROID</td><td>ALOHA 风格遥操作</td><td>10 Hz</td><td>多视角</td><td>关节 + 笛卡尔位姿</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="recommend">
+        <h2>9. 推荐自建采集方案</h2>
+        <div class="mermaid">
+flowchart TB
+  L1["Layer 1 · 预训练数据<br>Exylos / RoboCOIN 等公开集"]
+  L2["Layer 2 · 真机采集<br>50–200 episodes"]
+  L3["Layer 3 · 评估标注<br>清洁度 / 覆盖率指标"]
+  L1 -->|迁移 / 微调| L2 --> L3
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <h4>最低可行配置</h4>
+            <ul class="compact">
+              <li>单臂 + 2 路相机（腕部 + 固定）</li>
+              <li>约 50 episodes，每条约 30 秒</li>
+              <li>固定模板污渍，便于定量评估</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4>研究级配置</h4>
+            <ul class="compact">
+              <li>双臂 Franka / ALOHA + 腕部 F/T</li>
+              <li>100 Hz 力数据与 30 Hz 视觉对齐</li>
+              <li>俯拍 before/after + 程序化污渍生成</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="format">
+        <h2>10. 数据格式对照</h2>
+        <table>
+          <thead><tr><th>格式</th><th>状态 / 动作</th><th>视频</th><th>力 / 深度</th><th>常用工具</th></tr></thead>
+          <tbody>
+            <tr><td>LeRobot v2 / v3</td><td>Parquet</td><td>MP4</td><td>可扩展字段</td><td>LeRobot 库</td></tr>
+            <tr><td>ForceFlow Zarr</td><td>Zarr 数组</td><td>内嵌 JPEG</td><td>force, delta_force</td><td>项目配套 loader</td></tr>
+            <tr><td>RLDS (DROID)</td><td>TFRecord</td><td>内嵌</td><td>部分含</td><td>TensorFlow Datasets</td></tr>
+            <tr><td>Exylos 扩展</td><td>Parquet + object_poses</td><td>MP4 + PNG mask</td><td>dirty_fraction</td><td>LeRobot + 自定义字段</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="papers">
+        <h2>11. 参考文献</h2>
+        <ul class="compact">
+          <li><a href="https://arxiv.org/abs/2511.17441" target="_blank" rel="noopener">RoboCOIN: 大规模多本体双臂操作数据集</a> (2025)</li>
+          <li><a href="https://arxiv.org/abs/2602.22818" target="_blank" rel="noopener">LeRobot: 端到端机器人学习开源库</a> (2026)</li>
+          <li><a href="https://arxiv.org/abs/2505.06451" target="_blank" rel="noopener">Adaptive Wiping: 力反馈自适应擦拭</a> (2025)</li>
+          <li><a href="https://arxiv.org/abs/2507.06053" target="_blank" rel="noopener">SCCRub: 软体机器人擦洗与力-挠度建模</a> (2025)</li>
+          <li><a href="https://arxiv.org/abs/2401.02117" target="_blank" rel="noopener">Mobile ALOHA: 移动双臂操作</a> (2024)</li>
+        </ul>
+        <p style="margin-top:1rem;font-size:.9rem;color:var(--muted);">更多资源：LeRobot 文档 · ForceFlow 项目页 · Exylos 官网 · Unitree AVP 遥操作文档</p>
+      </section>
+
+      <footer class="footer">
+        桌面 / 台面擦拭清洁 · 数据采集方案调研 · 2026 年 7 月
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+
+    document.querySelectorAll('.thumb-row').forEach(row => {
+      const vid = document.getElementById(row.dataset.target);
+      row.querySelectorAll('img').forEach(img => {
+        img.addEventListener('click', () => {
+          row.querySelectorAll('img').forEach(i => i.classList.remove('active'));
+          img.classList.add('active');
+          if (vid) { vid.currentTime = parseFloat(img.dataset.time); vid.play(); }
+        });
+      });
+    });
+
+    fetch('assets/exylos/dirty_fraction_ep0.json')
+      .then(r => r.json())
+      .then(drawChart)
+      .catch(() => {});
+
+    function drawChart(data) {
+      const canvas = document.getElementById('dirty-chart');
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      const W = rect.width, H = rect.height;
+      const pad = { l: 48, r: 16, t: 16, b: 32 };
+      const plotW = W - pad.l - pad.r, plotH = H - pad.t - pad.b;
+      const xs = data.map(d => d.time_s);
+      const xMax = Math.max(...xs);
+      const xScale = t => pad.l + (t / xMax) * plotW;
+      const yScale = v => pad.t + (1 - v / 1.05) * plotH;
+
+      ctx.fillStyle = '#fcfcfc';
+      ctx.fillRect(0, 0, W, H);
+      ctx.strokeStyle = '#e5e5e5';
+      ctx.lineWidth = 1;
+      for (const y of [0, 0.25, 0.5, 0.75, 1]) {
+        ctx.beginPath();
+        ctx.moveTo(pad.l, yScale(y));
+        ctx.lineTo(W - pad.r, yScale(y));
+        ctx.stroke();
+        ctx.fillStyle = '#737373';
+        ctx.font = '11px sans-serif';
+        ctx.fillText(y.toFixed(2), 8, yScale(y) + 4);
+      }
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = '#16a34a';
+      ctx.beginPath();
+      ctx.moveTo(pad.l, yScale(0.01));
+      ctx.lineTo(W - pad.r, yScale(0.01));
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#16a34a';
+      ctx.font = '10px sans-serif';
+      ctx.fillText('成功阈值 0.01', W - pad.r - 72, yScale(0.01) - 4);
+      ctx.strokeStyle = '#2563eb';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      data.forEach((d, i) => {
+        const x = xScale(d.time_s), y = yScale(d.dirty_fraction);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.fillStyle = '#737373';
+      ctx.font = '11px sans-serif';
+      ctx.fillText('时间 (s)', W / 2 - 20, H - 6);
+      ctx.save();
+      ctx.translate(14, H / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.fillText('dirty_fraction', -40, 0);
+      ctx.restore();
+    }
+  </script>
+</body>
+</html>
