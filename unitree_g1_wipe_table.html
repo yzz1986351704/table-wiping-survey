@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Unitree G1 Wipe Table · 数据集详解</title>
+  <style>
+    :root {
+      --bg: #fafafa; --surface: #fff; --border: #e5e5e5; --text: #171717;
+      --muted: #737373; --accent: #2563eb; --accent-soft: #eff6ff;
+      --success: #16a34a; --warn: #ca8a04;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 1.5rem 1.75rem 3rem; }
+    .back { font-size: .9rem; margin-bottom: 1.25rem; display: inline-block; }
+    .hero { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem 2rem; margin-bottom: 1.5rem; }
+    .hero h1 { margin: 0 0 .4rem; font-size: 1.55rem; line-height: 1.35; }
+    .hero .subtitle { margin: 0; color: var(--muted); font-size: .98rem; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1rem; }
+    .pill { font-size: .78rem; padding: .2rem .65rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent); border: 1px solid #bfdbfe; }
+    section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.35rem 1.6rem; margin-bottom: 1.25rem; }
+    section h2 { margin: 0 0 .75rem; font-size: 1.2rem; border-bottom: 1px solid var(--border); padding-bottom: .45rem; }
+    section h3 { font-size: 1rem; margin: 1.15rem 0 .5rem; }
+    .lead { color: var(--muted); font-size: .95rem; margin-top: 0; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: .85rem; }
+    @media (max-width: 720px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+    .card { border: 1px solid var(--border); border-radius: 10px; padding: .9rem 1rem; background: #fcfcfc; }
+    .card h4 { margin: 0 0 .3rem; font-size: .92rem; }
+    .card .meta { font-size: .82rem; color: var(--muted); margin: 0; }
+    .stat { font-size: 1.35rem; font-weight: 650; letter-spacing: -.02em; }
+    table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+    th, td { border: 1px solid var(--border); padding: .45rem .6rem; text-align: left; vertical-align: top; }
+    th { background: #f5f5f5; font-weight: 600; }
+    video { width: 100%; max-height: 400px; border-radius: 8px; border: 1px solid var(--border); background: #000; }
+    .media-block { margin: .75rem 0 0; }
+    .media-block figcaption { font-size: .82rem; color: var(--muted); margin-top: .4rem; }
+    .thumb-row { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .75rem; }
+    .thumb-row img { width: calc(33.33% - .4rem); min-width: 120px; border-radius: 6px; border: 1px solid var(--border); cursor: pointer; }
+    .thumb-row img:hover, .thumb-row img.active { outline: 2px solid var(--accent); }
+    .demo-grid { display: grid; grid-template-columns: 1fr; gap: 1.1rem; margin-top: .85rem; }
+    @media (min-width: 800px) { .demo-grid { grid-template-columns: 1fr 1fr 1fr; } }
+    .demo-card { border: 1px solid var(--border); border-radius: 10px; padding: .75rem; background: #fcfcfc; }
+    .demo-card h4 { margin: 0 0 .35rem; font-size: .9rem; }
+    .demo-card .meta { font-size: .78rem; color: var(--muted); margin: 0 0 .55rem; }
+    .demo-card video { max-height: 320px; }
+    ul.compact { margin: .4rem 0; padding-left: 1.2rem; }
+    ul.compact li { margin: .28rem 0; font-size: .92rem; }
+    .note { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: .85rem 1rem; font-size: .9rem; color: #854d0e; }
+    .links a { display: inline-block; margin: .25rem .75rem .25rem 0; }
+    code { font-size: .84em; background: #f5f5f5; padding: .1rem .35rem; border-radius: 4px; border: 1px solid var(--border); }
+    pre { background: #f5f5f5; border: 1px solid var(--border); border-radius: 8px; padding: .9rem 1rem; overflow-x: auto; font-size: .82rem; line-height: 1.45; }
+    .footer { text-align: center; color: var(--muted); font-size: .8rem; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="index.html">← 返回调研报告</a>
+
+    <header class="hero">
+      <h1>Unitree G1 · Wipe Table 数据集详解</h1>
+      <p class="subtitle">真机人形双臂 · Apple Vision Pro 遥操作 · 抹布擦除桌面水渍 · LeRobot v2.1</p>
+      <div class="pill-row">
+        <span class="pill">200 episodes</span>
+        <span class="pill">75,909 frames</span>
+        <span class="pill">30 Hz</span>
+        <span class="pill">4 路相机</span>
+        <span class="pill">Apache-2.0</span>
+      </div>
+    </header>
+
+    <section>
+      <h2>1. 概览</h2>
+      <p class="lead">该数据集由宇树（Unitree）以 LeRobot 格式公开发布，任务指令为：用抹布擦掉桌面上的水（<em>Wipe the water off the table with a rag</em>）。相对仿真 / 固定臂擦拭集，它提供的是<strong>真实 G1 人形双臂</strong>在实验室桌面上的接触式擦拭轨迹，适合作为真机分布参考或人形策略微调的起点。</p>
+      <div class="grid-3" style="margin-top:1rem;">
+        <div class="card"><div class="stat">200</div><p class="meta">训练 episodes（全量公开）</p></div>
+        <div class="card"><div class="stat">~12.7 s</div><p class="meta">单条平均时长（按 30 FPS 折算）</p></div>
+        <div class="card"><div class="stat">~2.4 GB</div><p class="meta">视频总量量级（4 视角 × 200）</p></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>2. 任务与场景</h2>
+      <ul class="compact">
+        <li><strong>目标</strong>：夹持抹布，擦除桌面上的水渍。</li>
+        <li><strong>工具</strong>：抹布（rag），由夹爪夹持；非海绵、非刷子、非刮水器。</li>
+        <li><strong>物体摆放</strong>：官方说明为在机械臂工作空间内、且头部相机视野内<strong>随机摆放</strong>；采集跨多次完成，条目间存在场景差异。</li>
+        <li><strong>初始姿态</strong>：每条 episode 的第一帧机器人状态即初始姿态。</li>
+        <li><strong>时长</strong>：README 写约 20–40 秒；根据 <code>meta/episodes.jsonl</code> 统计，帧数约 297–506（约 9.9–16.9 秒，中位约 12.6 秒）。以元数据为准更可靠。</li>
+      </ul>
+
+      <h3>演示视频（非 Episode 0 · cam_left_high）</h3>
+      <p class="lead">另选 3 条不同时长 / 场景的 episode，便于对比跨 session 差异。主报告样例仍使用 Episode 0。</p>
+      <div class="demo-grid">
+        <div class="demo-card">
+          <h4>Episode 6</h4>
+          <p class="meta">305 帧 · 约 10.2 秒 · 偏短轨迹</p>
+          <video id="unitree-ep6" controls preload="metadata" src="assets/videos/unitree_ep6_left.mp4"></video>
+          <div class="thumb-row" data-target="unitree-ep6">
+            <img src="assets/unitree/ep6/start.jpg" alt="起始" data-time="0" class="active" />
+            <img src="assets/unitree/ep6/mid.jpg" alt="中段" data-time="3" />
+            <img src="assets/unitree/ep6/end.jpg" alt="结尾" data-time="8" />
+          </div>
+        </div>
+        <div class="demo-card">
+          <h4>Episode 49</h4>
+          <p class="meta">506 帧 · 约 16.9 秒 · 本集最长之一</p>
+          <video id="unitree-ep49" controls preload="metadata" src="assets/videos/unitree_ep49_left.mp4"></video>
+          <div class="thumb-row" data-target="unitree-ep49">
+            <img src="assets/unitree/ep49/start.jpg" alt="起始" data-time="0" class="active" />
+            <img src="assets/unitree/ep49/mid.jpg" alt="中段" data-time="6" />
+            <img src="assets/unitree/ep49/end.jpg" alt="结尾" data-time="14" />
+          </div>
+        </div>
+        <div class="demo-card">
+          <h4>Episode 120</h4>
+          <p class="meta">297 帧 · 约 9.9 秒 · 本集最短之一</p>
+          <video id="unitree-ep120" controls preload="metadata" src="assets/videos/unitree_ep120_left.mp4"></video>
+          <div class="thumb-row" data-target="unitree-ep120">
+            <img src="assets/unitree/ep120/start.jpg" alt="起始" data-time="0" class="active" />
+            <img src="assets/unitree/ep120/mid.jpg" alt="中段" data-time="3" />
+            <img src="assets/unitree/ep120/end.jpg" alt="结尾" data-time="8" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>3. 硬件与采集方式</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h4>机器人</h4>
+          <p class="meta">Unitree G1 · <code>robot_type: G1_ALL</code><br>双臂各 7-DoF + 夹爪<br>记录全身相关关节状态（含下肢 / 腰）</p>
+        </div>
+        <div class="card">
+          <h4>遥操作</h4>
+          <p class="meta">Apple Vision Pro（AVP）遥操作<br>采集流程与机位布置见官方<br><a href="https://github.com/unitreerobotics/avp_teleoperate" target="_blank" rel="noopener">avp_teleoperate</a> 文档 Part 5</p>
+        </div>
+        <div class="card">
+          <h4>相机</h4>
+          <p class="meta">头部双目高位：<code>cam_left_high</code> / <code>cam_right_high</code><br>腕部单目：<code>cam_left_wrist</code> / <code>cam_right_wrist</code><br>分辨率 640×480 · AV1 · 30 FPS</p>
+        </div>
+        <div class="card">
+          <h4>末端</h4>
+          <p class="meta">平行夹爪（Gripper）<br>状态与动作均含左右夹爪开合<br>另提供左右末端 6D 位姿（EE）</p>
+        </div>
+      </div>
+      <p class="note" style="margin-top:1rem;">官方提醒：空间位置难以精确文字描述，复现时应按 AVP 文档安装硬件后，将场景尽量对齐数据集首帧；训练时需考虑跨 session 的场景差异。</p>
+    </section>
+
+    <section>
+      <h2>4. 规模与时长统计</h2>
+      <table>
+        <thead>
+          <tr><th>指标</th><th>数值</th><th>说明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Episodes</td><td>200</td><td>split <code>train: 0:200</code></td></tr>
+          <tr><td>总帧数</td><td>75,909</td><td>约 42 分钟有效轨迹（按 30 Hz）</td></tr>
+          <tr><td>视频文件</td><td>800</td><td>4 相机 × 200 episode</td></tr>
+          <tr><td>采样频率</td><td>30 Hz</td><td>状态 / 动作 / 视频对齐</td></tr>
+          <tr><td>单条帧数</td><td>297 – 506</td><td>均值 379.5 · 中位 377</td></tr>
+          <tr><td>单条时长</td><td>约 9.9 – 16.9 s</td><td>均值约 12.7 s</td></tr>
+          <tr><td>任务数</td><td>1</td><td>仅桌面抹布擦水</td></tr>
+          <tr><td>格式版本</td><td>LeRobot v2.1</td><td>Parquet + MP4</td></tr>
+          <tr><td>许可证</td><td>Apache-2.0</td><td>可商用，需保留声明</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>5. 模态与字段</h2>
+      <p class="lead">观测与动作成对给出；视觉为独立视频流，状态/动作在 parquet 中按帧索引对齐。</p>
+      <table>
+        <thead>
+          <tr><th>类别</th><th>字段</th><th>维度 / 说明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td rowspan="4">视觉</td><td><code>observation.images.cam_left_high</code></td><td>480×640×3 · 头左</td></tr>
+          <tr><td><code>observation.images.cam_right_high</code></td><td>480×640×3 · 头右</td></tr>
+          <tr><td><code>observation.images.cam_left_wrist</code></td><td>480×640×3 · 左腕</td></tr>
+          <tr><td><code>observation.images.cam_right_wrist</code></td><td>480×640×3 · 右腕</td></tr>
+          <tr><td rowspan="5">观测状态</td><td><code>observation.left_arm</code> / <code>right_arm</code></td><td>各 7 · 肩–腕关节角</td></tr>
+          <tr><td><code>observation.left_gripper</code> / <code>right_gripper</code></td><td>各 1 · 夹爪</td></tr>
+          <tr><td><code>observation.left_ee</code> / <code>right_ee</code></td><td>各 6 · 末端位姿</td></tr>
+          <tr><td><code>observation.body</code></td><td>29 · 含下肢、腰与双臂</td></tr>
+          <tr><td>—</td><td>无公开 F/T 力/力矩通道</td></tr>
+          <tr><td rowspan="4">动作</td><td><code>action.left_arm</code> / <code>right_arm</code></td><td>各 7</td></tr>
+          <tr><td><code>action.left_gripper</code> / <code>right_gripper</code></td><td>各 1</td></tr>
+          <tr><td><code>action.left_ee</code> / <code>right_ee</code></td><td>各 6</td></tr>
+          <tr><td><code>action.body</code></td><td>7 · 机身速度 / 姿态 / 高度等</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:.9rem;color:var(--muted);margin:.75rem 0 0;">相对 ForceFlow 等力感知擦拭集，本集优势在<strong>人形真机双臂 + 多视角</strong>；短板是<strong>缺少力传感与清洁度标注</strong>（无 dirty_fraction / mask）。</p>
+    </section>
+
+    <section>
+      <h2>6. 目录结构与加载</h2>
+      <pre>G1_Dex1_Wipe_Table/
+├── meta/
+│   ├── info.json
+│   ├── tasks.jsonl          # "Wipe the water off the table with a rag."
+│   └── episodes.jsonl       # 每条 length
+├── data/chunk-000/
+│   └── episode_XXXXXX.parquet
+└── videos/chunk-000/
+    ├── observation.images.cam_left_high/
+    ├── observation.images.cam_right_high/
+    ├── observation.images.cam_left_wrist/
+    └── observation.images.cam_right_wrist/
+        └── episode_XXXXXX.mp4</pre>
+      <p>Hugging Face 上可直接用 LeRobot 加载：</p>
+      <pre>from lerobot.datasets.lerobot_dataset import LeRobotDataset
+
+ds = LeRobotDataset("unitreerobotics/G1_Dex1_Wipe_Table")
+print(ds.num_episodes, ds.fps, list(ds.features.keys())[:8])</pre>
+    </section>
+
+    <section>
+      <h2>7. 使用建议与局限</h2>
+      <ul class="compact">
+        <li><strong>适合</strong>：需要真机人形擦桌子分布、AVP 遥操作轨迹、多视角视觉–动作对齐的场景；作为 G1 上擦拭 / 桌面清洁策略的冷启动数据。</li>
+        <li><strong>不太适合单独解决</strong>：精细力控（无 F/T）、定量清洁评估（无 dirty_fraction）、刮水器 / 刷子等异形工具迁移。</li>
+        <li><strong>训练注意</strong>：跨 session 场景变化；复现硬件安装时对齐首帧；若只训上肢，可裁剪 <code>observation.body</code> / <code>action.body</code> 中与任务无关的维度。</li>
+        <li><strong>相关上下文</strong>：数据集主页挂在 <a href="https://unigen-x.github.io/unifolm-vla.github.io/" target="_blank" rel="noopener">UnifoLM-VLA-0</a> 项目下，可作为该系列真机任务之一理解，而非孤立的「只擦桌子」产品数据集。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>8. 相关链接</h2>
+      <p class="links">
+        <a href="https://huggingface.co/datasets/unitreerobotics/G1_Dex1_Wipe_Table" target="_blank" rel="noopener">Hugging Face 数据集 →</a>
+        <a href="https://github.com/unitreerobotics/avp_teleoperate" target="_blank" rel="noopener">AVP 遥操作文档 →</a>
+        <a href="https://unigen-x.github.io/unifolm-vla.github.io/" target="_blank" rel="noopener">UnifoLM-VLA 主页 →</a>
+        <a href="https://github.com/huggingface/lerobot" target="_blank" rel="noopener">LeRobot →</a>
+        <a href="index.html#samples">返回报告 · 样例区 →</a>
+      </p>
+    </section>
+
+    <p class="footer">内容整理自官方 README 与 meta 统计 · 桌面擦拭清洁数据采集调研</p>
+  </div>
+
+  <script>
+    document.querySelectorAll(".thumb-row").forEach(row => {
+      const vid = document.getElementById(row.dataset.target);
+      if (!vid) return;
+      row.querySelectorAll("img").forEach(img => {
+        img.addEventListener("click", () => {
+          const t = parseFloat(img.dataset.time || "0");
+          vid.currentTime = t;
+          row.querySelectorAll("img").forEach(i => i.classList.remove("active"));
+          img.classList.add("active");
+          vid.play().catch(() => {});
+        });
+      });
+    });
+  </script>
+</body>
+</html>

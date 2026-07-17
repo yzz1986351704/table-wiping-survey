@@ -198,7 +198,7 @@ sequenceDiagram
 
       <section id="samples">
         <h2>5. 公开数据集样例</h2>
-        <p class="lead">以下为两个代表性数据集的 Episode 样例，展示典型擦拭任务的视觉观测与操作过程。</p>
+        <p class="lead">以下为五个代表性数据集的 Episode / 任务样例，展示典型擦拭任务的视觉观测与操作过程。</p>
 
         <h3>Exylos · 双臂海绵清理台面溢洒（俯视视角）</h3>
         <div class="card">
@@ -215,6 +215,10 @@ sequenceDiagram
             <img src="assets/exylos/frame_30s.jpg" alt="擦拭进行中" data-time="30" />
             <img src="assets/exylos/frame_45s.jpg" alt="接近完成" data-time="45" />
           </div>
+          <p style="margin:1rem 0 0;font-size:.92rem;">
+            <a href="exylos_dataset_survey/index.html">深入了解 Exylos 数据集专项调研 →</a>
+            <span style="color:var(--muted);font-size:.85rem;">（模态字段、阶段划分、对比结论、可复现边界）</span>
+          </p>
         </div>
 
         <h3>Unitree G1 · 抹布擦拭桌面水渍</h3>
@@ -230,6 +234,61 @@ sequenceDiagram
             <img src="assets/unitree/frame_0s.jpg" alt="任务起始" data-time="0" class="active" />
             <img src="assets/unitree/frame_5s.jpg" alt="擦拭中" data-time="5" />
             <img src="assets/unitree/frame_10s.jpg" alt="擦拭中" data-time="10" />
+          </div>
+          <p style="margin:1rem 0 0;font-size:.92rem;">
+            <a href="unitree_g1_wipe_table.html">深入了解 Unitree G1 Wipe Table 数据集 →</a>
+            <span style="color:var(--muted);font-size:.85rem;">（任务细节、硬件机位、字段说明、加载方式）</span>
+          </p>
+        </div>
+
+        <h3>ForceFlow · clean_whiteboard（固定相机）</h3>
+        <div class="card">
+          <span class="badge highlight">公开数据集</span>
+          <span class="badge">100 episodes · SpaceMouse + F/T</span>
+          <span class="badge">xArm6 · 平面恒压擦拭</span>
+          <figure class="media-block">
+            <video id="forceflow-video" controls preload="metadata" src="assets/videos/forceflow_clean_wb.mp4"></video>
+            <figcaption>Clean Whiteboard 任务演示 · 固定相机视角 · 约 13 秒 · 来源：ForceFlow 项目页（完整 Zarr 含逐帧 RGB+力，约 3GB）</figcaption>
+          </figure>
+          <div class="thumb-row" data-target="forceflow-video">
+            <img src="assets/forceflow/frame_0s.jpg" alt="0s" data-time="0" class="active" />
+            <img src="assets/forceflow/frame_4s.jpg" alt="4s" data-time="4" />
+            <img src="assets/forceflow/frame_8s.jpg" alt="8s" data-time="8" />
+            <img src="assets/forceflow/frame_12s.jpg" alt="12s" data-time="12" />
+          </div>
+        </div>
+
+        <h3>DROID wipe table · 侧视相机</h3>
+        <div class="card">
+          <span class="badge highlight">公开数据集</span>
+          <span class="badge">20 episodes · Franka</span>
+          <span class="badge">10 FPS · 真实实验室场景</span>
+          <figure class="media-block">
+            <video id="droid-video" controls preload="metadata" src="assets/videos/droid_wipe_ep0_side.mp4"></video>
+            <figcaption>Episode 0 片段 · side_view_1_left · Franka 擦桌子 · 约 8 秒</figcaption>
+          </figure>
+          <div class="thumb-row" data-target="droid-video">
+            <img src="assets/droid/frame_0s.jpg" alt="0s" data-time="0" class="active" />
+            <img src="assets/droid/frame_3s.jpg" alt="3s" data-time="3" />
+            <img src="assets/droid/frame_5s.jpg" alt="5s" data-time="5" />
+            <img src="assets/droid/frame_7s.jpg" alt="7s" data-time="7" />
+          </div>
+        </div>
+
+        <h3>ALOHA mobile wipe wine · 高位相机</h3>
+        <div class="card">
+          <span class="badge highlight">公开数据集</span>
+          <span class="badge">50 episodes · 移动双臂</span>
+          <span class="badge">640×480 · 50 FPS</span>
+          <figure class="media-block">
+            <video id="aloha-video" controls preload="metadata" src="assets/videos/aloha_wipe_ep0_high.mp4"></video>
+            <figcaption>Episode 0 片段 · cam_high · Mobile ALOHA 擦拭 · 约 26 秒</figcaption>
+          </figure>
+          <div class="thumb-row" data-target="aloha-video">
+            <img src="assets/aloha/frame_0s.jpg" alt="0s" data-time="0" class="active" />
+            <img src="assets/aloha/frame_8s.jpg" alt="8s" data-time="8" />
+            <img src="assets/aloha/frame_16s.jpg" alt="16s" data-time="16" />
+            <img src="assets/aloha/frame_24s.jpg" alt="24s" data-time="24" />
           </div>
         </div>
 
@@ -277,6 +336,8 @@ stateDiagram-v2
             <div class="meta">50 ep · 约 22.5 GB · 双臂 Panda · Apache 2.0</div>
             <p>7 路 RGB、分割 mask、6DoF 位姿、dirty_fraction、阶段标注</p>
             <span class="badge highlight">含本页样例视频</span>
+            <a href="exylos_dataset_survey/index.html">详解 →</a>
+            ·
             <a href="https://huggingface.co/datasets/ExylosAi/table_spill_cleanup_bimanual" target="_blank" rel="noopener">Hugging Face →</a>
             <div class="compare-bar"><span class="label">标注丰富度</span><div class="bar-wrap"><div class="bar" style="width:95%"></div></div></div>
           </div>
@@ -285,6 +346,8 @@ stateDiagram-v2
             <div class="meta">200 ep · G1 人形 · AVP 遥操作</div>
             <p>腕部 + 头部 4 路视频，双臂 7-DoF 状态与末端位姿</p>
             <span class="badge highlight">含本页样例视频</span>
+            <a href="unitree_g1_wipe_table.html">详解 →</a>
+            ·
             <a href="https://huggingface.co/datasets/unitreerobotics/G1_Dex1_Wipe_Table" target="_blank" rel="noopener">Hugging Face →</a>
             <div class="compare-bar"><span class="label">真机真实感</span><div class="bar-wrap"><div class="bar" style="width:90%"></div></div></div>
           </div>
@@ -292,6 +355,7 @@ stateDiagram-v2
             <h4>ForceFlow</h4>
             <div class="meta">350 ep · xArm6 + F/T · Zarr 格式</div>
             <p>含 clean_whiteboard（平面恒压）、clean_vase（曲面力控）等任务</p>
+            <span class="badge highlight">含本页样例视频</span>
             <a href="https://huggingface.co/datasets/JokerESC/ForceFlow" target="_blank" rel="noopener">Hugging Face →</a>
             <div class="compare-bar"><span class="label">力数据质量</span><div class="bar-wrap"><div class="bar" style="width:98%"></div></div></div>
           </div>
@@ -299,12 +363,14 @@ stateDiagram-v2
             <h4>DROID wipe table</h4>
             <div class="meta">20 ep · Franka · 10 Hz</div>
             <p>多实验室真实场景，多样性高；无专用清洁度指标</p>
+            <span class="badge highlight">含本页样例视频</span>
             <a href="https://huggingface.co/datasets/jellyho/droid_wipe_table" target="_blank" rel="noopener">Hugging Face →</a>
           </div>
           <div class="card">
             <h4>ALOHA mobile wipe wine</h4>
             <div class="meta">50 ep · 移动双臂 · 50 Hz</div>
             <p>移动底座 + 擦拭，适用于移动操作场景</p>
+            <span class="badge highlight">含本页样例视频</span>
             <a href="https://huggingface.co/datasets/lerobot/aloha_mobile_wipe_wine" target="_blank" rel="noopener">Hugging Face →</a>
           </div>
           <div class="card">

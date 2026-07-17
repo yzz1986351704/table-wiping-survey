@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exylos 数据集专项调研</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #f7f7f5;
+      --surface: #ffffff;
+      --border: #e4e4e0;
+      --text: #1a1a18;
+      --muted: #6b6b66;
+      --accent: #0f6e56;
+      --accent-soft: #e8f5f0;
+      --warn: #9a6700;
+      --warn-soft: #fff8e6;
+      --danger: #b42318;
+      --danger-soft: #fef3f2;
+      --ok: #067647;
+      --ok-soft: #ecfdf3;
+      --sidebar-w: 250px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar {
+      position: fixed; top: 0; left: 0; width: var(--sidebar-w); height: 100vh;
+      overflow-y: auto; background: var(--surface); border-right: 1px solid var(--border);
+      padding: 1.25rem 1rem 2rem;
+    }
+    .sidebar .brand { font-size: .78rem; font-weight: 600; color: var(--accent); margin-bottom: .35rem; }
+    .sidebar h2 {
+      font-size: .72rem; text-transform: uppercase; letter-spacing: .08em;
+      color: var(--muted); margin: 1.1rem 0 .55rem;
+    }
+    .sidebar nav a {
+      display: block; padding: .38rem .55rem; border-radius: 6px;
+      color: var(--text); font-size: .88rem;
+    }
+    .sidebar nav a:hover { background: var(--accent-soft); text-decoration: none; }
+    .sidebar .back {
+      display: inline-block; font-size: .82rem; margin-bottom: .75rem;
+      padding: .25rem .5rem; border-radius: 6px; background: var(--bg); border: 1px solid var(--border);
+    }
+    .sidebar .tag { font-size: .72rem; color: var(--muted); margin-top: 1.25rem; line-height: 1.4; }
+
+    main {
+      margin-left: var(--sidebar-w); flex: 1; max-width: 1400px;
+      padding: 1.75rem 2.5rem 4rem;
+    }
+
+    .hero {
+      background: linear-gradient(145deg, #0f6e56 0%, #1a8f6e 55%, #2a9d8f 100%);
+      color: #fff; border-radius: 14px; padding: 1.85rem 2rem; margin-bottom: 1.5rem;
+    }
+    .hero h1 { margin: 0 0 .45rem; font-size: 1.7rem; font-weight: 650; letter-spacing: -.02em; }
+    .hero p { margin: 0; opacity: .92; font-size: .95rem; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1rem; }
+    .pill {
+      font-size: .75rem; padding: .2rem .6rem; border-radius: 999px;
+      background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.28);
+    }
+
+    section {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 1.4rem 1.6rem; margin-bottom: 1.25rem;
+    }
+    section h2 {
+      margin: 0 0 .75rem; font-size: 1.28rem;
+      border-bottom: 1px solid var(--border); padding-bottom: .5rem;
+    }
+    section h3 { font-size: 1.02rem; margin: 1.35rem 0 .5rem; }
+    .lead { color: var(--muted); font-size: .93rem; margin: 0 0 1rem; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: .9rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: .75rem; }
+
+    .card {
+      border: 1px solid var(--border); border-radius: 10px; padding: .9rem 1rem; background: #fafaf8;
+    }
+    .card h4 { margin: 0 0 .3rem; font-size: .92rem; }
+    .card .meta { font-size: .82rem; color: var(--muted); margin: 0; }
+    .stat { text-align: center; }
+    .stat .num { font-size: 1.45rem; font-weight: 700; color: var(--accent); line-height: 1.2; }
+    .stat .lbl { font-size: .75rem; color: var(--muted); margin-top: .2rem; }
+
+    .badge {
+      display: inline-block; font-size: .72rem; padding: .12rem .45rem; border-radius: 4px;
+      margin-right: .2rem; border: 1px solid var(--border); background: #f5f5f3;
+    }
+    .badge.ok { background: var(--ok-soft); border-color: #abefc6; color: var(--ok); }
+    .badge.warn { background: var(--warn-soft); border-color: #f5d0a0; color: var(--warn); }
+    .badge.no { background: var(--danger-soft); border-color: #fecdca; color: var(--danger); }
+    .badge.soft { background: var(--accent-soft); border-color: #b7e4d4; color: var(--accent); }
+
+    .callout {
+      border-radius: 10px; padding: .9rem 1rem; margin: 1rem 0; font-size: .9rem;
+      border: 1px solid var(--border);
+    }
+    .callout.ok { background: var(--ok-soft); border-color: #abefc6; }
+    .callout.warn { background: var(--warn-soft); border-color: #f5d0a0; }
+    .callout.info { background: var(--accent-soft); border-color: #b7e4d4; }
+
+    .table-wrap { overflow-x: auto; margin: .75rem 0; border-radius: 8px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: .84rem; min-width: 520px; }
+    th, td { border-bottom: 1px solid var(--border); padding: .55rem .65rem; text-align: left; vertical-align: top; }
+    th { background: #f3f3f0; font-weight: 600; white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fafaf8; }
+    .sticky-col { position: sticky; left: 0; background: #fff; z-index: 1; box-shadow: 2px 0 4px rgba(0,0,0,.04); }
+    th.sticky-col { background: #f3f3f0; }
+
+    .flow {
+      display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; margin: 1rem 0;
+      font-size: .88rem;
+    }
+    .flow .step {
+      background: var(--accent-soft); border: 1px solid #b7e4d4; color: var(--accent);
+      padding: .45rem .7rem; border-radius: 8px; font-weight: 550;
+    }
+    .flow .arrow { color: var(--muted); }
+
+    .mermaid { background: #fafaf8; border-radius: 8px; padding: .75rem; overflow-x: auto; }
+    .phase-tags { display: flex; flex-wrap: wrap; gap: .35rem; margin: .5rem 0 1rem; }
+    .phase-tags span {
+      font-size: .78rem; padding: .2rem .5rem; border-radius: 6px;
+      background: #f3f3f0; border: 1px solid var(--border); font-family: ui-monospace, monospace;
+    }
+
+    .two-col-list { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    .two-col-list ul { margin: .35rem 0 0; padding-left: 1.1rem; font-size: .86rem; }
+    .two-col-list h4 { margin: 0; font-size: .9rem; }
+
+    .media-block { margin: .75rem 0 0; }
+    .media-block figcaption { font-size: .78rem; color: var(--muted); margin-top: .4rem; line-height: 1.45; }
+    .demo-card video {
+      width: 100%; aspect-ratio: 4/3; object-fit: cover;
+      border-radius: 8px; border: 1px solid var(--border); background: #111;
+    }
+    .thumb-row { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: .5rem; }
+    .thumb-row img {
+      width: calc(25% - .3rem); min-width: 56px; border-radius: 5px;
+      border: 1px solid var(--border); cursor: pointer; transition: outline .15s;
+    }
+    .thumb-row img:hover, .thumb-row img.active { outline: 2px solid var(--accent); }
+    .figure-img { width: 100%; border-radius: 8px; border: 1px solid var(--border); display: block; }
+    #dirty-chart {
+      width: 100%; height: 220px; border: 1px solid var(--border);
+      border-radius: 8px; background: #fafaf8;
+    }
+    .chart-caption { font-size: .78rem; color: var(--muted); margin-top: .35rem; }
+    .modality-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin: .75rem 0; }
+    .modality-strip .shot-label {
+      font-size: .72rem; color: var(--muted); margin-top: .35rem; text-align: center;
+    }
+
+    footer.page-foot {
+      margin-top: 1rem; font-size: .78rem; color: var(--muted);
+      padding: 1rem; text-align: center;
+    }
+
+    .mobile-bar {
+      display: none; position: sticky; top: 0; z-index: 20;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: .65rem 1rem; font-weight: 600;
+    }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      main { margin-left: 0; padding: 1rem 1rem 3rem; }
+      .mobile-bar { display: block; }
+      .grid-2, .grid-3, .grid-4, .two-col-list, .modality-strip { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.35rem; }
+      .thumb-row img { width: calc(50% - .2rem); }
+    }
+  </style>
+</head>
+<body>
+  <div class="mobile-bar">Exylos 数据集专项调研</div>
+  <div class="layout">
+    <aside class="sidebar">
+      <a class="back" href="../index.html">← 总调研可视化</a>
+      <div class="brand">EXYLOS SURVEY</div>
+      <h2>章节导航</h2>
+      <nav>
+        <a href="#fact">1. 基本事实卡</a>
+        <a href="#pipeline">2. 采集链路</a>
+        <a href="#demos">2b. 样本演示</a>
+        <a href="#metrics">3. 标注与指标</a>
+        <a href="#useful">4. 对我们有什么用</a>
+        <a href="#repro">5. 公开与未公开</a>
+        <a href="#compare">6. 同类对比</a>
+        <a href="#risk">7. 注意点</a>
+      </nav>
+      <h2>源文件</h2>
+      <nav>
+        <a href="REPORT.md">Markdown 主报告</a>
+        <a href="attachments/fact_card.md">事实卡</a>
+        <a href="attachments/modality_checklist.md">字段清单</a>
+        <a href="attachments/comparison_table.md">对比表 MD</a>
+        <a href="attachments/reproducibility_boundary.md">可复现边界</a>
+      </nav>
+      <p class="tag">依据官方文档与随包元数据整理<br>未公开内容单独标注</p>
+    </aside>
+
+    <main>
+      <header class="hero">
+        <h1>Exylos 双臂台面溢洒清理<br>数据集专项调研</h1>
+        <p>VR 示范驱动 · 仿真清洁指标 · LeRobot 数据格式</p>
+        <div class="pill-row">
+          <span class="pill">50 条示范</span>
+          <span class="pill">双臂 Panda</span>
+          <span class="pill">7 路 RGB</span>
+          <span class="pill">dirty_fraction</span>
+          <span class="pill">仿真合成</span>
+        </div>
+      </header>
+
+      <!-- 1 -->
+      <section id="fact">
+        <h2>1. 基本事实卡</h2>
+        <div class="grid-4">
+          <div class="card stat"><div class="num">50</div><div class="lbl">条示范</div></div>
+          <div class="card stat"><div class="num">6.7 万</div><div class="lbl">帧数</div></div>
+          <div class="card stat"><div class="num">30</div><div class="lbl">帧/秒</div></div>
+          <div class="card stat"><div class="num">18 维</div><div class="lbl">状态 / 动作</div></div>
+        </div>
+
+        <h3>任务定义</h3>
+        <p class="lead">机器人需要先移开桌面上的遮挡物或干扰物，再用海绵把液体溢洒擦干净。</p>
+        <div class="grid-2">
+          <div class="card">
+            <h4>清洁是否达标</h4>
+            <p class="meta">看最后一帧的 <code>dirty_fraction</code>：若 ≤ 0.01，表示剩余污渍不超过原始面积的 1%。</p>
+          </div>
+          <div class="card">
+            <h4>本条示范是否记为成功</h4>
+            <p class="meta">以 <code>next.success</code> 和 <code>annotations.json</code> 为准。除清洁度外，操作员中止等情况也会记为失败，不能只看 dirty_fraction。</p>
+          </div>
+        </div>
+        <h3>规模与本体</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>项目</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td>机器人</td><td>双臂 Franka Emika Panda，每只手臂 7 个关节 + 平行夹爪</td></tr>
+              <tr><td>数据格式</td><td>LeRobot 兼容：Parquet（轨迹与标注）+ MP4（视频）+ PNG（分割图）</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>观测与动作接口</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>数据类型</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td>RGB 视频</td><td>7 路固定/腕部相机（front、left、left_45、right、top、wrist_l、wrist_r），分辨率 1280×960，30 FPS，H.264 编码</td></tr>
+              <tr><td>深度图</td><td><span class="badge no">无</span></td></tr>
+              <tr><td>实例分割</td><td>4 路 PNG 掩码；标签 0–6，其中 4 代表液体污渍（liquid_spill）</td></tr>
+              <tr><td>机器人状态 / 动作</td><td>各 18 维：左右臂各 7 个关节 + 2 个夹爪指关节</td></tr>
+              <tr><td>力 / 力矩</td><td><span class="badge no">无</span></td></tr>
+              <tr><td>物体状态</td><td>每帧记录海绵（sponge）、杯子（cup）、液体污渍（liquid_spill）；污渍带 dirty_fraction 字段</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>场景变体预览</h3>
+        <p class="lead">同一条 VR 种子示范经仿真扩展后，会生成物体布局、干扰物与光照各不相同的变体。以下三路均为 top_cam 俯视，来自不同 Episode。</p>
+        <div class="grid-3">
+          <div class="card demo-card">
+            <h4>Episode 0</h4>
+            <span class="badge ok">成功</span>
+            <figure class="media-block">
+              <video controls preload="metadata" poster="../assets/exylos/poster_ep0.jpg"
+                src="../assets/videos/exylos_ep0_top.mp4"></video>
+              <figcaption>~49s · dirty_fraction 达标 · 移杯 + 擦拭完成</figcaption>
+            </figure>
+          </div>
+          <div class="card demo-card">
+            <h4>Episode 1</h4>
+            <span class="badge ok">成功</span>
+            <figure class="media-block">
+              <video controls preload="metadata" poster="../assets/exylos/poster_ep1.jpg"
+                src="../assets/videos/exylos_ep1_top.mp4"></video>
+              <figcaption>~41s · 不同物体摆放与干扰物布局</figcaption>
+            </figure>
+          </div>
+          <div class="card demo-card">
+            <h4>Episode 6</h4>
+            <span class="badge warn">失败</span>
+            <figure class="media-block">
+              <video controls preload="metadata" poster="../assets/exylos/poster_ep6.jpg"
+                src="../assets/videos/exylos_ep6_top.mp4"></video>
+              <figcaption>~30s · cleanup_incomplete · 污渍未擦净</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2 -->
+      <section id="pipeline">
+        <h2>2. 数据从哪来（采集链路）</h2>
+        <p class="lead">
+          这条数据既不是真机实拍，也不是完全靠程序随机生成的轨迹。
+          做法是：让人在 VR 里先示范一遍怎么擦，再由仿真系统把示范转成机器人数据，并批量生成不同场景变体。
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>步骤</th><th>具体过程</th><th>执行方</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>① VR 示范采集</td>
+                <td>操作者在 VR 中完成「移障碍物 + 擦液体」，采集任务意图、操作节奏与双臂配合。</td>
+                <td>人</td>
+              </tr>
+              <tr>
+                <td>② 动作映射到机器人</td>
+                <td>手部动作 retarget 到 Franka Panda，输出 18 维 state/action，不保留原始骨骼数据。</td>
+                <td>系统</td>
+              </tr>
+              <tr>
+                <td>③ 仿真扩展与随机化</td>
+                <td>以审核通过的示范为种子，随机化物体布局、光照、视角等，批量生成物理一致的变体。</td>
+                <td>仿真系统</td>
+              </tr>
+              <tr>
+                <td>④ 导出为标准数据包</td>
+                <td>按 LeRobot 格式打包导出。</td>
+                <td>系统</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="grid-2" style="margin-top:.9rem">
+          <div class="card">
+            <h4>人负责什么</h4>
+            <p class="meta">提供「怎么擦」的示范：任务意图、动作时序、双臂配合、出错后的纠正。这是它和纯随机仿真的主要区别。</p>
+          </div>
+          <div class="card">
+            <h4>仿真负责什么</h4>
+            <p class="meta">提供机器人本体、物理场景、相机画面、批量变体，以及仿真里才能直接读取的标注（如 dirty_fraction、mask、物体位姿）。</p>
+          </div>
+        </div>
+
+        <div class="callout warn" style="margin-top:.9rem">
+          <strong>官方未公开的内容：</strong>VR 设备型号、动作重定向算法、场景随机化的具体参数、本公开包使用的仿真引擎版本（官网提到 Isaac/Newton，但未说明本包是否采用），以及种子示范与变体数据的对应关系。
+        </div>
+      </section>
+
+      <!-- 2b demos -->
+      <section id="demos">
+        <h2>样本演示 · Episode 0</h2>
+        <p class="lead">
+          以下三路视频来自本地已下载的 Episode 0 样本（~49s，成功示范）。
+          点击缩略图可跳转到对应时刻。
+        </p>
+        <div class="grid-3">
+          <div class="card demo-card">
+            <h4>俯视 · top_cam</h4>
+            <span class="badge ok">全局布局</span>
+            <figure class="media-block">
+              <video id="exylos-top" controls preload="metadata" poster="../assets/exylos/frame_0s.jpg"
+                src="../assets/videos/exylos_ep0_top.mp4"></video>
+              <figcaption>双臂配合、移杯与擦拭全貌</figcaption>
+            </figure>
+            <div class="thumb-row" data-target="exylos-top">
+              <img src="../assets/exylos/frame_0s.jpg" alt="0s" data-time="0" class="active" />
+              <img src="../assets/exylos/frame_15s.jpg" alt="15s" data-time="15" />
+              <img src="../assets/exylos/frame_30s.jpg" alt="30s" data-time="30" />
+              <img src="../assets/exylos/frame_45s.jpg" alt="45s" data-time="45" />
+            </div>
+          </div>
+          <div class="card demo-card">
+            <h4>正面 · front_cam</h4>
+            <span class="badge soft">操作视角</span>
+            <figure class="media-block">
+              <video id="exylos-front" controls preload="metadata" poster="../assets/exylos/frame_front_0s.jpg"
+                src="../assets/videos/exylos_ep0_front_cam.mp4"></video>
+              <figcaption>正面观察移障碍物与擦拭动作</figcaption>
+            </figure>
+            <div class="thumb-row" data-target="exylos-front">
+              <img src="../assets/exylos/frame_front_0s.jpg" alt="0s" data-time="0" class="active" />
+              <img src="../assets/exylos/frame_front_30s.jpg" alt="30s" data-time="30" />
+              <img src="../assets/exylos/frame_front_45s.jpg" alt="45s" data-time="45" />
+            </div>
+          </div>
+          <div class="card demo-card">
+            <h4>左腕 · wrist_cam_l</h4>
+            <span class="badge soft">近景接触</span>
+            <figure class="media-block">
+              <video id="exylos-wrist" controls preload="metadata" poster="../assets/exylos/frame_wrist_0s.jpg"
+                src="../assets/videos/exylos_ep0_wrist_cam_l.mp4"></video>
+              <figcaption>腕部相机贴近海绵与台面接触区</figcaption>
+            </figure>
+            <div class="thumb-row" data-target="exylos-wrist">
+              <img src="../assets/exylos/frame_wrist_0s.jpg" alt="0s" data-time="0" class="active" />
+              <img src="../assets/exylos/frame_wrist_30s.jpg" alt="30s" data-time="30" />
+              <img src="../assets/exylos/frame_wrist_45s.jpg" alt="45s" data-time="45" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3 -->
+      <section id="metrics">
+        <h2>3. 标注与指标</h2>
+        <h3>任务阶段（含义与顺序）</h3>
+        <p class="lead">
+          每条示范被切成多个阶段，记录机器人在做什么。典型成功示范的主流程如下（左右臂可能同时进行）。
+          其中 <code>clean_swipe_pass</code> 表示一次擦拭划过，会重复出现多次，并包含在 <code>clean_surface</code> 这个更大的擦拭时段里。
+        </p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>顺序</th><th>阶段名</th><th>含义</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><code>approach</code></td><td>手臂移向目标物体</td></tr>
+              <tr><td>2</td><td><code>grasp</code></td><td>抓取物体（标注中可写明抓的是哪个物体）</td></tr>
+              <tr><td>3</td><td><code>transport</code></td><td>搬运或移动物体</td></tr>
+              <tr><td>4</td><td><code>place</code></td><td>放下物体并松开夹爪</td></tr>
+              <tr><td>5</td><td><code>retract</code></td><td>手臂收回</td></tr>
+              <tr><td>6</td><td><code>clean_surface</code></td><td>擦拭台面的总时段</td></tr>
+              <tr><td>7</td><td><code>clean_swipe_pass</code></td><td>其中的一次擦拭划过（可重复多次）</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="flow">
+          <span class="step">approach</span><span class="arrow">→</span>
+          <span class="step">grasp</span><span class="arrow">→</span>
+          <span class="step">transport</span><span class="arrow">→</span>
+          <span class="step">place</span><span class="arrow">→</span>
+          <span class="step">retract</span><span class="arrow">→</span>
+          <span class="step">clean_surface</span><span class="arrow">⊃</span>
+          <span class="step">clean_swipe_pass × N</span>
+        </div>
+
+        <h3>清洁度指标 dirty_fraction</h3>
+        <div class="callout info">
+          <strong>这是什么：</strong>仿真直接给出的「还剩多少污渍」比例，取值 0 到 1。
+          1 表示污渍一点没擦掉（100% 仍在），0 表示完全擦净，0.01 表示还剩原来的 1%。<br><br>
+          <strong>用来干什么：</strong>判断这条示范擦干净了没有、筛成功/失败样本、在仿真里做离线评估。<br><br>
+          <strong>真机上能不能用：</strong>不能。真机没有仿真这种「直接读剩余污渍面积」的能力，部署时不能靠它判断何时停手或是否成功。
+        </div>
+
+        <canvas id="dirty-chart"></canvas>
+        <p class="chart-caption">Episode 0 · dirty_fraction 随时间变化 · 绿虚线为成功阈值 0.01 · 终端值 0.0003</p>
+        <div class="grid-2" style="margin-top:.9rem">
+          <div class="card">
+            <h4>起始 · dirty_fraction ≈ 1.0</h4>
+            <img class="figure-img" src="../assets/exylos/frame_0s.jpg" alt="起始状态" />
+            <p class="meta" style="margin-top:.4rem">污渍完整覆盖台面溢洒区</p>
+          </div>
+          <div class="card">
+            <h4>完成 · dirty_fraction ≈ 0.0003</h4>
+            <img class="figure-img" src="../assets/exylos/frame_45s.jpg" alt="完成状态" />
+            <p class="meta" style="margin-top:.4rem">低于 0.01 门槛，记为成功</p>
+          </div>
+        </div>
+
+        <p class="lead" style="margin-top:1rem">数据里还有 D1–D7 等动作质量评分，但官方未公开计算公式，且与 dirty_fraction 不是同一类指标。</p>
+      </section>
+
+      <!-- 4 -->
+      <section id="useful">
+        <h2>4. 对我们有什么用</h2>
+        <p class="lead">以下判断基于：仿真/真机方案尚未确定，感知以 RGB 相机为主，关注自建数据采集与评测方法。</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>使用方式</th><th>评价</th><th>原因</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>直接拿来当真机预训练数据</td>
+                <td><span class="badge warn">不太合适</span></td>
+                <td>场景和机器人都来自仿真，与真实 G1、xArm 等在形态和外观上差距较大</td>
+              </tr>
+              <tr>
+                <td>参考数据格式和标注设计</td>
+                <td><span class="badge ok">很有价值</span></td>
+                <td>LeRobot 结构完整，含视频、mask、位姿、阶段标注，适合作为自建数据的格式模板</td>
+              </tr>
+              <tr>
+                <td>参考「怎么判断擦干净了」</td>
+                <td><span class="badge ok">很有价值</span></td>
+                <td>可借鉴「剩余污渍比例 + 失败原因分类 + 阶段标注」的思路；但真机上需另建可观测的替代指标</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout ok">
+          <strong>总结：</strong>更适合当作数据格式、标注方式和评价思路的参考，也可用于仿真侧的模仿学习试验；
+          不宜默认它能直接迁移到真机擦水渍场景。
+        </div>
+      </section>
+
+      <!-- 5 -->
+      <section id="repro">
+        <h2>5. 官方公开了什么、没公开什么</h2>
+        <div class="two-col-list">
+          <div class="card">
+            <h4><span class="badge ok">已公开，可按文档使用</span></h4>
+            <ul>
+              <li>数据目录结构与 Parquet 字段说明</li>
+              <li>相机列表、分割标签、关节顺序</li>
+              <li>dirty_fraction 的含义与 0.01 达标门槛</li>
+              <li>任务阶段名称与数据加载示例</li>
+              <li>采集链路的整体描述</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4><span class="badge no">未公开，无法复现</span></h4>
+            <ul>
+              <li>污渍面积的具体计算方法</li>
+              <li>VR 动作到 Panda 的重定向算法</li>
+              <li>场景随机化的参数设置</li>
+              <li>阶段边界的自动切分方法</li>
+              <li>D1–D7 评分的计算公式与全量数据规模</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6 -->
+      <section id="compare">
+        <h2>6. 和其他擦拭数据集对比</h2>
+        <p class="lead">可横向滚动查看完整表格。Exylos 的优势在于仿真里提供了可直接读取的清洁度指标和较完整的阶段标注；若需要真机数据或力觉信息，应优先考虑其他数据集。</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th class="sticky-col">维度</th>
+                <th>Exylos 主集</th>
+                <th>Unitree G1</th>
+                <th>ForceFlow</th>
+                <th>DROID wipe</th>
+                <th>ALOHA wipe</th>
+                <th>RoboCOIN*</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="sticky-col">数据条数</td>
+                <td>50</td><td>200</td><td>擦拭相关 150 条</td><td>20</td><td>50</td><td>约 1176 条*</td>
+              </tr>
+              <tr>
+                <td class="sticky-col">真机 / 仿真</td>
+                <td><span class="badge soft">仿真 + VR 示范</span></td>
+                <td>真机</td><td>真机</td><td>真机</td><td>真机</td><td>真机（多平台）</td>
+              </tr>
+              <tr>
+                <td class="sticky-col">采集方式</td>
+                <td>VR 示范 → 映射到机器人 → 仿真扩展</td><td>AVP 遥操作</td><td>SpaceMouse 遥操作</td><td>DROID 体系</td><td>Mobile ALOHA</td><td>多平台遥操作</td>
+              </tr>
+              <tr>
+                <td class="sticky-col">机器人</td>
+                <td>双臂 Panda</td><td>Unitree G1</td><td>xArm6</td><td>Franka</td><td>ALOHA 移动双臂</td><td>多种型号</td>
+              </tr>
+              <tr>
+                <td class="sticky-col">力 / 力矩</td>
+                <td><span class="badge no">无</span></td>
+                <td>文档未说明</td><td><span class="badge ok">有</span></td>
+                <td>非核心字段</td><td>文档未说明</td><td>视平台而定</td>
+              </tr>
+              <tr>
+                <td class="sticky-col">清洁指标</td>
+                <td>dirty_fraction ≤ 0.01</td>
+                <td>未给出面积公式</td>
+                <td>以力跟踪为主</td>
+                <td>无同类指标</td>
+                <td>无同类指标</td>
+                <td>任务/动作级标注</td>
+              </tr>
+              <tr>
+                <td class="sticky-col">主要价值</td>
+                <td>仿真清洁指标、阶段标注、失败分类</td>
+                <td>真机人形擦桌子</td>
+                <td>力控擦拭研究</td>
+                <td>真机小样本</td>
+                <td>移动双臂擦拭</td>
+                <td>大规模真机子集</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="lead">* RoboCOIN 条数来自本仓库既有调研；完整数据需 HuggingFace 授权下载。</p>
+        <div class="grid-3">
+          <div class="card"><h4>需要清洁度指标和阶段标注</h4><p class="meta">优先看 Exylos</p></div>
+          <div class="card"><h4>需要力控擦拭数据</h4><p class="meta">优先看 ForceFlow</p></div>
+          <div class="card"><h4>需要真机真实分布</h4><p class="meta">优先看 Unitree、RoboCOIN、DROID、ALOHA</p></div>
+        </div>
+      </section>
+
+      <!-- 7 -->
+      <section id="risk">
+        <h2>7. 使用时的注意点</h2>
+        <div class="grid-2">
+          <div class="card"><h4>仿真到真机的差距</h4><p class="meta">数据来自仿真场景，迁移到真机时需要在目标机器人和真实环境中重新验证。</p></div>
+          <div class="card"><h4>真机上难以观测污渍</h4><p class="meta">仿真可直接给出 dirty_fraction；真机上若只有 RGB 相机，清水渍往往很难稳定判断擦没擦干净。</p></div>
+          <div class="card"><h4>清洁指标不能用于真机部署</h4><p class="meta">用这份数据训练后，真机测试时不能依赖 dirty_fraction 来判断是否停手或是否成功。</p></div>
+          <div class="card"><h4>公开包规模有限</h4><p class="meta">目前只有 50 条 preview，成败比例和失败类型不一定代表 Exylos 的全量产品数据。</p></div>
+          <div class="card"><h4>没有力觉信息</h4><p class="meta">擦拭是接触丰富的任务，但本公开包不含力/力矩数据，相关研究需另找数据集或自行采集。</p></div>
+          <div class="card"><h4>机器人本体不同</h4><p class="meta">数据是双臂 Panda 的轨迹，不能直接当作其他机器人的同构动作使用。</p></div>
+        </div>
+      </section>
+
+      <section id="refs">
+        <h2>参考来源</h2>
+        <ol style="font-size:.88rem;color:var(--muted);margin:0;padding-left:1.2rem">
+          <li>Hugging Face：ExylosAi/table_spill_cleanup_bimanual 数据集说明</li>
+          <li>本地元数据：datasets/exylos_table_spill_50ep_meta/</li>
+          <li>对比数据集：Unitree G1、ForceFlow、DROID wipe、ALOHA mobile wipe 的公开说明</li>
+        </ol>
+      </section>
+
+      <p class="page-foot">
+        网页版 · <a href="REPORT.md">Markdown 原文</a> ·
+        <a href="../index.html">返回总调研</a>
+      </p>
+    </main>
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+
+    document.querySelectorAll('.thumb-row').forEach(row => {
+      const vid = document.getElementById(row.dataset.target);
+      row.querySelectorAll('img').forEach(img => {
+        img.addEventListener('click', () => {
+          row.querySelectorAll('img').forEach(i => i.classList.remove('active'));
+          img.classList.add('active');
+          if (vid) { vid.currentTime = parseFloat(img.dataset.time); vid.play(); }
+        });
+      });
+    });
+
+    fetch('../assets/exylos/dirty_fraction_ep0.json')
+      .then(r => r.json())
+      .then(data => {
+        const canvas = document.getElementById('dirty-chart');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
+        const W = rect.width, H = rect.height;
+        const pad = { l: 48, r: 16, t: 16, b: 32 };
+        const plotW = W - pad.l - pad.r, plotH = H - pad.t - pad.b;
+        const xs = data.map(d => d.time_s);
+        const ys = data.map(d => d.dirty_fraction);
+        const xMin = 0, xMax = Math.max(...xs);
+        const yMin = 0, yMax = 1.05;
+        const xScale = t => pad.l + (t - xMin) / (xMax - xMin) * plotW;
+        const yScale = v => pad.t + (1 - (v - yMin) / (yMax - yMin)) * plotH;
+
+        ctx.fillStyle = '#fafaf8';
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.strokeStyle = '#e4e4e0';
+        ctx.lineWidth = 1;
+        for (const y of [0, 0.25, 0.5, 0.75, 1]) {
+          ctx.beginPath();
+          ctx.moveTo(pad.l, yScale(y));
+          ctx.lineTo(W - pad.r, yScale(y));
+          ctx.stroke();
+          ctx.fillStyle = '#6b6b66';
+          ctx.font = '11px sans-serif';
+          ctx.fillText(y.toFixed(2), 8, yScale(y) + 4);
+        }
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = '#067647';
+        ctx.beginPath();
+        ctx.moveTo(pad.l, yScale(0.01));
+        ctx.lineTo(W - pad.r, yScale(0.01));
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#067647';
+        ctx.font = '10px sans-serif';
+        ctx.fillText('成功阈值 0.01', W - pad.r - 72, yScale(0.01) - 4);
+
+        ctx.strokeStyle = '#0f6e56';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        data.forEach((d, i) => {
+          const x = xScale(d.time_s), y = yScale(d.dirty_fraction);
+          i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+
+        ctx.fillStyle = '#6b6b66';
+        ctx.font = '11px sans-serif';
+        ctx.fillText('时间 (s)', W / 2 - 20, H - 6);
+        ctx.save();
+        ctx.translate(14, H / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText('dirty_fraction', -40, 0);
+        ctx.restore();
+      })
+      .catch(() => {
+        const c = document.getElementById('dirty-chart');
+        if (c) c.insertAdjacentHTML('afterend', '<p class="chart-caption">图表数据加载失败，请通过本地 HTTP 服务打开此页面。</p>');
+      });
+  </script>
+</body>
+</html>
